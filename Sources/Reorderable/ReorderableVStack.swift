@@ -44,7 +44,7 @@ public struct ReorderableVStack<Data: RandomAccessCollection, Content: View>: Vi
   
   @_documentation(visibility: internal)
   public var body: some View {
-    VStack(spacing: 0) {
+    LazyVStack(spacing: 0) {
       ReorderableStack<VerticalContainerAxis, Data, Content>(data, coordinateSpaceName: coordinateSpaceName, onMove: onMove, content: content)
     }.coordinateSpace(name: coordinateSpaceName)
   }
@@ -317,7 +317,7 @@ private struct Sample2D: Identifiable {
       
       ReorderableHStack(sample.row, onMove: { from, to in
         withAnimation {
-          let index = data.firstIndex(where: {$0.id == sample.id})!
+          guard let index = data.firstIndex(where: {$0.id == sample.id}) else { return }
           data[index].row.move(fromOffsets: IndexSet(integer: from),
                                    toOffset: (to > from) ? to + 1 : to)
         }
@@ -342,7 +342,7 @@ private struct Sample2D: Identifiable {
       .padding()
       .onTapGesture {
         withAnimation {
-          sample.color = [UIColor.systemRed, UIColor.systemYellow, UIColor.systemMint].randomElement()!
+          sample.color = [UIColor.systemRed, UIColor.systemYellow, UIColor.systemMint].randomElement() ?? UIColor.systemRed
         }
       }
   }

@@ -7,6 +7,15 @@
 
 import SwiftUI
 
+/// Safely retrieves a value from a dictionary, crashing with a descriptive message if the key is missing.
+/// Used in Binding initializers where the dictionary is guaranteed to contain all keys from the same data source.
+private func requireValue<K: Hashable, V>(_ map: [K: V], forKey key: K) -> V {
+  guard let value = map[key] else {
+    preconditionFailure("Reorderable: element ID not found in binding map. This indicates a data inconsistency.")
+  }
+  return value
+}
+
 public extension ReorderableVStack {
 
   /// Creates a reorderable vertical stack that computes its rows on demande from an underlying collection of identifable data and update the
@@ -22,7 +31,7 @@ public extension ReorderableVStack {
     let idToBindingMap = Dictionary(uniqueKeysWithValues: data.map({binding in
       (binding.wrappedValue.id, binding)
     }))
-    
+
     self.init(
       data.wrappedValue,
       onMove: { from, to in
@@ -32,10 +41,10 @@ public extension ReorderableVStack {
         }
       },
       content: { element in
-        content(idToBindingMap[element.id]!)
+        content(requireValue(idToBindingMap, forKey: element.id))
       })
   }
-  
+
   /// Creates a reorderable vertical stack that computes its rows on demande from an underlying collection of identifable data and update the
   /// order of those datum based on the user's interaction.
   ///
@@ -49,7 +58,7 @@ public extension ReorderableVStack {
     let idToBindingMap = Dictionary(uniqueKeysWithValues: data.map({binding in
       (binding.wrappedValue.id, binding)
     }))
-    
+
     self.init(
       data.wrappedValue,
       onMove: { from, to in
@@ -59,13 +68,13 @@ public extension ReorderableVStack {
         }
       },
       content: { element, isDragging in
-        content(idToBindingMap[element.id]!, isDragging)
+        content(requireValue(idToBindingMap, forKey: element.id), isDragging)
       })
   }
 }
 
 public extension ReorderableHStack {
-  
+
   /// Creates a reorderable horizontal stack that computes its rows on demande from an underlying collection of identifable data and update the
   /// order of those datum based on the user's interaction.
   ///
@@ -79,7 +88,7 @@ public extension ReorderableHStack {
     let idToBindingMap = Dictionary(uniqueKeysWithValues: data.map({binding in
       (binding.wrappedValue.id, binding)
     }))
-    
+
     self.init(
       data.wrappedValue,
       onMove: { from, to in
@@ -89,10 +98,10 @@ public extension ReorderableHStack {
         }
       },
       content: { element in
-        content(idToBindingMap[element.id]!)
+        content(requireValue(idToBindingMap, forKey: element.id))
       })
   }
-  
+
   /// Creates a reorderable horizontal stack that computes its rows on demande from an underlying collection of identifable data and update the
   /// order of those datum based on the user's interaction.
   ///
@@ -106,7 +115,7 @@ public extension ReorderableHStack {
     let idToBindingMap = Dictionary(uniqueKeysWithValues: data.map({binding in
       (binding.wrappedValue.id, binding)
     }))
-    
+
     self.init(
       data.wrappedValue,
       onMove: { from, to in
@@ -116,7 +125,7 @@ public extension ReorderableHStack {
         }
       },
       content: { element, isDragging in
-        content(idToBindingMap[element.id]!, isDragging)
+        content(requireValue(idToBindingMap, forKey: element.id), isDragging)
       })
   }
 }

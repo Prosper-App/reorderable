@@ -38,9 +38,7 @@ struct DragHandleViewModifier: ViewModifier {
   func body(content: Content) -> some View {
     content
       .onPreferenceChange(HasDragHandlePreferenceKey.self) { val in
-        Task { @MainActor in
-          alreadyHasDragHandle = val
-        }
+        alreadyHasDragHandle = val
       }
       .gesture(
         SimultaneousGesture(
@@ -49,11 +47,13 @@ struct DragHandleViewModifier: ViewModifier {
           .onChanged { values in
             // Putting these here seems to garantee the execution order
             // which eliminates some of the jiggle.
-            dragCallbacks.onDrag(values.first!, values.second!)
+            guard let first = values.first, let second = values.second else { return }
+            dragCallbacks.onDrag(first, second)
           }
           .onEnded { values in
-            dragCallbacks.onDrag(values.first!, values.second!)
-            dragCallbacks.onDrop(values.first!)
+            guard let first = values.first, let second = values.second else { return }
+            dragCallbacks.onDrag(first, second)
+            dragCallbacks.onDrop(first)
           },
         isEnabled: dragCallbacks.isEnabled && !alreadyHasDragHandle)
       .preference(key: HasDragHandlePreferenceKey.self, value: true)
