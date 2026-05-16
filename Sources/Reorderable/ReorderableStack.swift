@@ -162,7 +162,7 @@ package struct ReorderableStack<Axis: ContainerAxis, Data: RandomAccessCollectio
         var dragPos = Axis.project(point: stackDrag.location)
 
         scrollTimer = Timer.scheduledTimer(withTimeInterval: timerInterval, repeats: true) { _ in
-          Task { @MainActor in
+          MainActor.assumeIsolated {
             pos.wrappedValue.scrollTo(point: Axis.asPoint(value: scrollOffset))
 
             checkIntersection(position: dragPos, dragged: dragging)
@@ -186,7 +186,7 @@ package struct ReorderableStack<Axis: ContainerAxis, Data: RandomAccessCollectio
         var dragPos = Axis.project(point: stackDrag.location)
 
         scrollTimer = Timer.scheduledTimer(withTimeInterval: timerInterval, repeats: true) { _ in
-          Task { @MainActor in
+          MainActor.assumeIsolated {
             pos.wrappedValue.scrollTo(point: Axis.asPoint(value: scrollOffset))
 
             checkIntersection(position: dragPos, dragged: dragging)
